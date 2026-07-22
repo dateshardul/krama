@@ -1,0 +1,48 @@
+# Writes activity.json — the last push date for every repo you own — so Krama can
+# show "last commit N days ago" against each epic without you updating anything.
+#
+# Setup (once):
+#   1. Create a fine-grained PAT with read-only "Metadata" access to all your repos.
+#   2. Add it to this repo as a secret named REPO_SCAN_TOKEN.
+#      (The default GITHUB_TOKEN only sees THIS repo, so it cannot do the job.)
+#
+# The commit it makes touches activity.json only.
+
+name: Refresh repo activity
+
+on:
+  schedule:
+    - cron: '17 1 * * *'      # 01:17 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch last push date per repo
+        env:
+          GH_TOKEN: ${{ secrets.REPO_SCAN_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh repo list --limit 200 --json nameWithOwner,pushedAt \
+            --jq 'map({(.nameWithOwner): (.pushedAt | split("T")[0])}) | add' \
+            > activity.json
+          echo "Repos captured: $(jq 'length' activity.json)"
+
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- activity.json; then
+            echo "No change."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add activity.json
+          git commit -m "chore: refresh repo activity"
+          git push

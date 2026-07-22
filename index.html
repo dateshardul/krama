@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krama · Plan</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="demo-banner" id="demoBanner" style="display:none">
+  Demo data — this is a public preview of a private planning tool. Nothing here is real.
+</div>
+
+<header>
+  <div class="brand">
+    <div class="logo">क्र</div>
+    <div><h1>Krama</h1><p id="brandSub">Goal · Milestones · Sprints</p></div>
+  </div>
+  <div class="viewseg" id="viewSeg">
+    <button data-v="today" class="active">Today</button>
+    <button data-v="sprint">Sprint</button>
+    <button data-v="backlog">Backlog</button>
+    <button data-v="roadmap">Roadmap</button>
+    <button data-v="review">Review</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="controls">
+    <button class="who" id="whoBtn" title="Who is using this right now?"></button>
+    <button id="syncChip" class="sync local"><span class="dot"></span><span id="syncTxt">Local</span></button>
+    <button class="btn" id="helpBtn" title="What is Agile? How do I use this?">?</button>
+    <button class="btn" id="setBtn" title="Settings, backup and reset">⚙</button>
+    <button class="btn primary" id="addBtn">+ Task</button>
+  </div>
+</header>
+
+<div class="views">
+
+  <!-- ===================== TODAY ===================== -->
+  <section class="view active" id="view-today">
+    <div class="inner">
+      <div id="t_strip"></div>
+      <div class="today-grid">
+        <div class="stack">
+          <div class="card">
+            <h3>Today's focus <span class="muted" id="t_focusCount"></span></h3>
+            <div id="t_focus"></div>
+            <div class="quickadd">
+              <input type="text" id="t_quick" placeholder="Add a task to this sprint and press Enter…">
+              <button class="btn" id="t_quickBtn">Add</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Blocked or waiting <span class="muted">needs a decision</span></h3>
+            <div id="t_review"></div>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <h3>Today &amp; this week
+              <span class="muted" style="margin-left:auto">
+                <button class="btn small" id="t_addEvent">+ Commitment</button></span></h3>
+            <div id="t_events"></div>
+          </div>
+          <div class="card">
+            <h3>Next milestones <span class="muted">dated</span></h3>
+            <div id="t_miles"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPRINT ===================== -->
+  <section class="view" id="view-sprint">
+    <div class="inner">
+      <div id="s_strip"></div>
+      <div class="kpis" id="s_kpis"></div>
+      <div class="board-wrap"><div class="board" id="s_board"></div></div>
+      <div style="height:16px"></div>
+      <div class="card">
+        <h3>Burndown <span class="muted">hours remaining</span></h3>
+        <figure class="chart-figure">
+          <div class="legend">
+            <span class="li"><span class="sw dash"></span>Ideal pace</span>
+            <span class="li"><span class="sw" style="background:#9b2c2c"></span>Actual remaining</span>
+          </div>
+          <div id="s_burn"></div>
+          <figcaption id="s_burnCap"></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BACKLOG ===================== -->
+  <section class="view" id="view-backlog">
+    <div class="inner">
+      <h2 class="sec-title">Backlog</h2>
+      <p class="empty" style="margin-top:-6px;max-width:620px">
+        Everything not yet pulled into a sprint, grouped by epic. Milestones are shown in place so
+        you can see what each pile is actually building towards.
+      </p>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 18px">
+        <input type="search" id="b_search" placeholder="Search backlog…">
+        <select id="b_kind"><option value="">All kinds</option></select>
+        <button class="btn" id="b_addEpic">+ Epic</button>
+        <button class="btn" id="b_addMile">+ Milestone</button>
+      </div>
+      <div id="b_list"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ROADMAP ===================== -->
+  <section class="view" id="view-roadmap">
+    <div class="inner">
+      <h2 class="sec-title">Roadmap</h2>
+      <p class="empty" style="margin-top:-6px;max-width:620px">
+        Every epic as a row, every milestone as a marker. The red line is today; the shaded band is
+        the sprint you are in now.
+      </p>
+      <div style="height:14px"></div>
+      <div class="rm">
+        <div class="rm-scroll"><div class="rm-grid" id="r_grid"></div></div>
+        <div class="rm-key">
+          <span><i class="cir"></i>Hard deadline — set by someone else</span>
+          <span><i class="dia"></i>Milestone you set yourself</span>
+          <span><i style="background:rgba(200,150,46,.6)"></i>Current sprint</span>
+        </div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="card">
+        <h3>Goal <span class="muted" id="r_goalTarget"></span></h3>
+        <div id="r_goal"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REVIEW ===================== -->
+  <section class="view" id="view-review">
+    <div class="inner">
+      <h2 class="sec-title">Sprint review</h2>
+      <p class="empty" style="margin-top:-6px;max-width:640px">
+        The page to open when you sit down together. What actually got finished, how fast the work is
+        really going, and everything either of you has written on a task.
+      </p>
+      <div style="height:14px"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Reviewing</label>
+        <select id="v_sprint"></select>
+        <span class="spacer"></span>
+        <button class="btn" id="v_close">Close this sprint &amp; start the next</button>
+      </div>
+      <div class="kpis" id="v_kpis"></div>
+      <div class="rev-grid">
+        <div class="stack">
+          <div class="card">
+            <h3>Finished this sprint <span class="muted" id="v_shipCount"></span></h3>
+            <div id="v_shipped"></div>
+          </div>
+          <div class="card">
+            <h3>Not finished <span class="muted">carries forward</span></h3>
+            <div id="v_missed"></div>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <h3>Velocity <span class="muted">hours finished per sprint</span></h3>
+            <figure class="chart-figure">
+              <div id="v_vel"></div>
+              <figcaption id="v_velCap"></figcaption>
+            </figure>
+          </div>
+          <div class="card">
+            <h3>Retrospective <span class="muted">what to change</span></h3>
+            <div class="cmt-feed" id="v_retro"></div>
+            <div class="quickadd">
+              <input type="text" id="v_retroIn" placeholder="What should we do differently next sprint?">
+              <button class="btn" id="v_retroBtn">Add</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Comments on tasks <span class="muted">all epics</span></h3>
+            <div class="cmt-feed" id="v_comments"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== Task modal ===================== -->
+<div class="overlay" id="taskOverlay">
+  <div class="modal">
+    <h2 id="taskTitle">Task</h2>
+    <div class="body">
+      <div class="field"><label>Task</label><textarea id="f_title" placeholder="Something you could finish in a day or two"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Epic</label><select id="f_epic"></select></div>
+        <div class="field"><label>Sprint</label><select id="f_sprint"></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Status</label><select id="f_status"></select></div>
+        <div class="field"><label>Estimate (hours)</label><input type="number" id="f_est" min="0" step="0.5" placeholder="e.g. 6"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Hard due date</label><input type="date" id="f_due"></div>
+        <div class="field"><label>Owner</label><select id="f_who"></select></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="f_note" placeholder="Anything worth remembering"></textarea></div>
+      <div class="field">
+        <label>Comments</label>
+        <div class="cmt-feed" id="f_comments" style="max-height:190px;margin-bottom:10px"></div>
+        <div class="quickadd" style="margin-top:0">
+          <input type="text" id="f_cmtIn" placeholder="Leave a comment…">
+          <button class="btn" id="f_cmtBtn">Post</button>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn danger-btn" id="taskDelete">Delete</button>
+      <div class="right"><button class="btn" id="taskCancel">Cancel</button><button class="btn primary" id="taskSave">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Epic modal ===================== -->
+<div class="overlay" id="epicOverlay">
+  <div class="modal">
+    <h2 id="epicTitle">Epic</h2>
+    <div class="body">
+      <div class="field"><label>Epic name</label><input type="text" id="e_title" placeholder="e.g. Bag End — game portfolio"></div>
+      <div class="row2">
+        <div class="field"><label>Kind</label><select id="e_kind"></select></div>
+        <div class="field"><label>GitHub repo</label><input type="text" id="e_repo" placeholder="dateshardul/portfolio"></div>
+      </div>
+      <div class="field"><label>What is this for?</label><textarea id="e_note"></textarea></div>
+    </div>
+    <div class="foot">
+      <button class="btn danger-btn" id="epicDelete">Delete</button>
+      <div class="right"><button class="btn" id="epicCancel">Cancel</button><button class="btn primary" id="epicSave">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Milestone modal ===================== -->
+<div class="overlay" id="mileOverlay">
+  <div class="modal">
+    <h2 id="mileTitle">Milestone</h2>
+    <div class="body">
+      <div class="field"><label>Milestone</label><input type="text" id="m_title" placeholder="A dated checkpoint you can point at"></div>
+      <div class="row2">
+        <div class="field"><label>Epic</label><select id="m_epic"></select></div>
+        <div class="field"><label>Due</label><input type="date" id="m_due"></div>
+      </div>
+      <div class="field">
+        <label>Deadline type</label>
+        <select id="m_hard">
+          <option value="">I set this date myself — it can move</option>
+          <option value="1">Someone else set it — it cannot move</option>
+        </select>
+      </div>
+      <div class="field"><label>Reached on</label><input type="date" id="m_done"><p class="help" style="margin:6px 0 0">Leave empty until it is actually reached.</p></div>
+    </div>
+    <div class="foot">
+      <button class="btn danger-btn" id="mileDelete">Delete</button>
+      <div class="right"><button class="btn" id="mileCancel">Cancel</button><button class="btn primary" id="mileSave">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Event modal ===================== -->
+<div class="overlay" id="evOverlay">
+  <div class="modal">
+    <h2 id="evTitle">Commitment</h2>
+    <div class="body">
+      <p class="help">Meetings, classes, family time — anything that is not backlog work but still
+      takes hours out of your week. Krama subtracts these from your sprint capacity.</p>
+      <div class="field"><label>What</label><input type="text" id="v_title" placeholder="e.g. Sprint review with Papa"></div>
+      <div class="row2">
+        <div class="field"><label>Date</label><input type="date" id="v_date"></div>
+        <div class="field"><label>Time</label><input type="text" id="v_time" placeholder="19:00"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Hours it costs</label><input type="number" id="v_hours" min="0" step="0.5"></div>
+        <div class="field"><label>Repeats</label><select id="v_repeat">
+          <option value="">Once</option><option value="weekly">Every week</option><option value="fortnightly">Every two weeks</option>
+        </select></div>
+      </div>
+      <div class="field"><label>With</label><input type="text" id="v_who" placeholder="Papa / Vinay, Vedang"></div>
+      <div class="field"><label>Notes</label><textarea id="v_note"></textarea></div>
+    </div>
+    <div class="foot">
+      <button class="btn danger-btn" id="evDelete">Delete</button>
+      <div class="right"><button class="btn" id="evCancel">Cancel</button><button class="btn primary" id="evSave">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Settings modal ===================== -->
+<div class="overlay" id="setOverlay">
+  <div class="modal">
+    <h2>Settings</h2>
+    <div class="body">
+      <div class="field"><label>Goal</label><input type="text" id="g_title"></div>
+      <div class="row2">
+        <div class="field"><label>Why it matters</label><textarea id="g_why"></textarea></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Goal target date</label><input type="date" id="g_target"></div>
+        <div class="field"><label>Sprint length (days)</label><input type="number" id="g_len" min="7" step="7"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Working hours per day</label><input type="number" id="g_hpd" min="1" step="0.5"></div>
+        <div class="field"><label>WIP limit (max in progress)</label><input type="number" id="g_wip" min="1" step="1"></div>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line2);margin:4px 0">
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn" id="expBtn">⤓ Download backup</button>
+        <button class="btn" id="impBtn">⤒ Restore backup</button>
+        <button class="btn danger-btn" id="resetBtn">Reset to seed</button>
+      </div>
+      <p class="help">Your plan lives in this browser. Download a backup before anything risky, and
+      connect sync below so it follows you between devices.</p>
+    </div>
+    <div class="foot"><span></span>
+      <div class="right"><button class="btn" id="setCancel">Close</button><button class="btn primary" id="setSave">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Sync modal ===================== -->
+<div class="overlay" id="syncOverlay">
+  <div class="modal">
+    <h2>Shared sync</h2>
+    <div class="body">
+      <p class="help">By default Krama saves in <b>this browser only</b>. Connect a free Supabase
+      project and the same plan appears on your phone, your laptop and your father's device —
+      everyone editing the same live data.</p>
+      <div class="help"><ol>
+        <li>Create a free project at <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>.</li>
+        <li>In <b>SQL Editor</b>, run the contents of <code>supabase-schema.sql</code> from this repo.</li>
+        <li>In <b>Settings → API</b>, copy the <b>Project URL</b> and the <b>anon public key</b>.</li>
+        <li>Paste them below and connect — on every device that should see the plan.</li>
+      </ol></div>
+      <div class="field"><label>Supabase project URL</label><input type="text" id="s_url" placeholder="https://xxxx.supabase.co"></div>
+      <div class="field"><label>anon public key</label><input type="text" id="s_key" placeholder="eyJhbGci…"></div>
+      <p class="help" style="background:#f6e0de;color:#8a2b24;border-radius:9px;padding:10px 12px">
+        <b>Read this before you put real plans in it.</b> With only the anon key, anyone who gets the
+        URL and key can read and edit the plan. That is fine while it is just you and your father on
+        your own devices. Before this goes on a public subdomain it needs Supabase Auth with
+        row-level security, so only signed-in accounts can touch the data.
+      </p>
+      <p class="help" id="syncStatus"></p>
+    </div>
+    <div class="foot">
+      <button class="btn danger-btn" id="syncDisconnect">Disconnect</button>
+      <div class="right"><button class="btn" id="syncClose">Close</button><button class="btn primary" id="syncSave">Connect</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Help / Agile primer ===================== -->
+<div class="overlay" id="helpOverlay">
+  <div class="modal wide">
+    <h2>How Krama works — and what Agile actually means</h2>
+    <div class="body">
+      <div class="help">
+        <h4>The one-paragraph version</h4>
+        <p>Agile came from software teams who were tired of planning a year ahead and discovering at
+        the end that the plan was wrong. The whole idea is small: <b>work in short fixed cycles,
+        finish something real in each one, then look at what happened and adjust.</b> Everything else
+        is vocabulary.</p>
+
+        <h4>The words, and what they mean here</h4>
+        <table>
+          <tr><th>Word</th><th>What it means</th><th>Where it is in Krama</th></tr>
+          <tr><td><b>Goal</b></td><td>The one thing all of this is for, 6–12 months out</td><td>Roadmap tab, and Settings</td></tr>
+          <tr><td><b>Epic</b></td><td>A big chunk of work — usually one project or one skill</td><td>Backlog tab, one block each</td></tr>
+          <tr><td><b>Milestone</b></td><td>A dated checkpoint you can point at and say "reached"</td><td>Diamonds and circles on the Roadmap</td></tr>
+          <tr><td><b>Backlog</b></td><td>Everything not yet scheduled, in priority order</td><td>Backlog tab</td></tr>
+          <tr><td><b>Sprint</b></td><td>A fixed two weeks. You commit to a set of tasks and do not change it mid-sprint</td><td>Sprint tab</td></tr>
+          <tr><td><b>Task</b></td><td>Something finishable in a day or two, with a clear "done"</td><td>The cards</td></tr>
+          <tr><td><b>Estimate</b></td><td>Your honest guess at hours. It will be wrong at first — that is the point</td><td>The hours on each card</td></tr>
+          <tr><td><b>Velocity</b></td><td>How many hours of work you <i>actually</i> finish per sprint</td><td>Review tab</td></tr>
+          <tr><td><b>Capacity</b></td><td>Hours available, after meetings and commitments are subtracted</td><td>The bar at the top of Sprint</td></tr>
+          <tr><td><b>WIP limit</b></td><td>Maximum things in progress at once. Finish before you start</td><td>Warning on the In Progress column</td></tr>
+          <tr><td><b>Burndown</b></td><td>Work remaining vs. days left — tells you early that you are behind</td><td>Bottom of Sprint</td></tr>
+        </table>
+
+        <h4>The rhythm — four moments, every two weeks</h4>
+        <ol>
+          <li><b>Planning</b> (Monday, ~1 hour, together). Look at capacity. Pull tasks from the
+          Backlog into the sprint until committed hours reach capacity — <i>and then stop</i>. Write
+          one sentence as the sprint goal.</li>
+          <li><b>Daily check</b> (5 minutes, alone). Open Today. What did I finish, what am I on, what
+          is stuck. Move a card. That is all.</li>
+          <li><b>Review</b> (end of sprint, together). Open the Review tab and <b>show the finished
+          work</b> — a demo, not a status report. Anything not finished goes back to the backlog.</li>
+          <li><b>Retrospective</b> (same sitting, 15 minutes). Not what got done — <i>how</i> it went.
+          One thing to change next sprint. Write it down in the Review tab.</li>
+        </ol>
+
+        <h4>Being honest about the parts that will not work</h4>
+        <p>Most of Scrum is machinery for coordinating six to nine people. Working alone, three things
+        carry nearly all the value and the rest is ceremony:</p>
+        <ul>
+          <li><b>The fixed boundary.</b> Every two weeks you are forced to stop and re-decide instead
+          of drifting between forty-five projects.</li>
+          <li><b>Measured velocity.</b> After three sprints you know your real capacity. This is the
+          antidote to optimistic planning, which is what actually kills solo plans.</li>
+          <li><b>A scheduled review with someone else.</b> Knowing you will have to show finished work
+          to your father on a fixed date changes what you do on the days in between. This is the part
+          that makes it work.</li>
+        </ul>
+
+        <h4>Two rules worth keeping</h4>
+        <ul>
+          <li><b>Do not change the sprint mid-sprint.</b> New ideas go to the backlog, not into this
+          week. If something genuinely cannot wait, take something else out — capacity is fixed.</li>
+          <li><b>Meetings are not tasks.</b> Add them as commitments. They come out of capacity before
+          you plan, so you plan against hours you actually have.</li>
+        </ul>
+
+        <h4>For Papa</h4>
+        <p>You can edit anything here. In Agile terms the useful role is not manager but
+        <b>stakeholder</b>: you set what matters most, you receive the demo, and you hold the deadline.
+        The most valuable thing you can do is comment on tasks — every comment shows up in the Review
+        tab, so nothing said gets lost between sittings.</p>
+      </div>
+    </div>
+    <div class="foot"><span></span><div class="right"><button class="btn primary" id="helpClose">Got it</button></div></div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+<input type="file" id="fileInput" accept="application/json" style="display:none">
+
+<script src="seed.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
