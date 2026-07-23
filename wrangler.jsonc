@@ -5,6 +5,6 @@
     "directory": "./"
   },
   "routes": [
-    { "pattern": "plan.shardul.date", "custom_domain": true }
+    { "pattern": "krama.shardul.date", "custom_domain": true }
   ]
 }
