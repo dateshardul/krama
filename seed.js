@@ -57,6 +57,8 @@ const SEED = {
     {id:'e-cloud',     title:'Skill — Cloud & MLOps',    kind:'learning',   repo:'',                           note:'Everything so far is local or Vercel. Need real AWS/GCP.'},
     {id:'e-career',    title:'Career — resume & applications', kind:'career', repo:'',                         note:'Resume must list the real work, not course projects.'},
     {id:'e-dp',        title:'Date Panchang — team',     kind:'commitment', repo:'',                           note:'Commitments to Vinay & Vedang. Consumes capacity.'},
+    {id:'e-arvr',      title:'AR/VR project',            kind:'project',    repo:'',                           note:'With Rutudhwaj. Built in Unity.'},
+    {id:'e-personal',  title:'Personal & people',        kind:'personal',   repo:'',                           note:'Loose personal tasks and people to follow up with.'},
   ],
 
   milestones: [
@@ -113,6 +115,9 @@ const SEED = {
     {id:'t25', epicId:'e-market',    sprintId:'', title:'Backtest harness with walk-forward validation', est:8, status:'todo', due:'', doneAt:'', who:'Shardul', note:'', comments:[]},
     {id:'t26', epicId:'e-bot',       sprintId:'', title:'Decide: revive PanchangBot or archive it',    est:1,  status:'todo', due:'', doneAt:'', who:'Shardul', note:'Untouched since Dec 2024.', comments:[]},
     {id:'t27', epicId:'e-nritya',    sprintId:'', title:'Write up the C++17 audio engine as a case study', est:5, status:'todo', due:'', doneAt:'', who:'Shardul', note:'', comments:[]},
+    {id:'t28', epicId:'e-arvr',     sprintId:'', title:'Unity — install and get up to speed on the basics', est:8, status:'todo', due:'', doneAt:'', who:'Shardul', note:'Engine for the AR/VR project with Rutudhwaj.', comments:[]},
+    {id:'t29', epicId:'e-personal', sprintId:'', title:'Send a few things to Neel', est:1, status:'todo', due:'', doneAt:'', who:'Shardul', note:'', comments:[]},
+    {id:'t30', epicId:'e-personal', sprintId:'', title:"Meeting with Krushanu's father", est:1, status:'todo', due:'', doneAt:'', who:'Shardul', note:'No date yet — set one, then move it to a commitment so it counts against sprint capacity.', comments:[]},
   ],
 
   /* Commitments that eat capacity but are not backlog work. */
