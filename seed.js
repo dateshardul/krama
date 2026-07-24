@@ -116,8 +116,8 @@ const SEED = {
     {id:'t26', epicId:'e-bot',       sprintId:'', title:'Decide: revive PanchangBot or archive it',    est:1,  status:'todo', due:'', doneAt:'', who:'Shardul', note:'Untouched since Dec 2024.', comments:[]},
     {id:'t27', epicId:'e-nritya',    sprintId:'', title:'Write up the C++17 audio engine as a case study', est:5, status:'todo', due:'', doneAt:'', who:'Shardul', note:'', comments:[]},
     {id:'t28', epicId:'e-arvr',     sprintId:'', title:'Unity — install and get up to speed on the basics', est:8, status:'todo', due:'', doneAt:'', who:'Shardul', note:'Engine for the AR/VR project with Rutudhwaj.', comments:[]},
-    {id:'t29', epicId:'e-personal', sprintId:'', title:'Send a few things to Neel', est:1, status:'todo', due:'', doneAt:'', who:'Shardul', note:'', comments:[]},
-    {id:'t30', epicId:'e-personal', sprintId:'', title:"Meeting with Krushanu's father", est:1, status:'todo', due:'', doneAt:'', who:'Shardul', note:'No date yet — set one, then move it to a commitment so it counts against sprint capacity.', comments:[]},
+    {id:'t29', epicId:'e-personal', sprintId:'s3', title:'Send two things to Neel', est:1, status:'todo', due:'2026-07-24', doneAt:'', who:'Shardul', note:'Two items — immediate.', comments:[]},
+    {id:'t31', epicId:'e-market',   sprintId:'', title:'Get data from Hasya', est:2, status:'todo', due:'', doneAt:'', who:'Shardul', note:'Data needed for MarketViaGraha.', comments:[]},
   ],
 
   /* Commitments that eat capacity but are not backlog work. */
@@ -126,6 +126,7 @@ const SEED = {
     {id:'ev2', title:'Date Panchang team sync', date:'2026-07-23', time:'21:00', hours:1,   kind:'commitment', who:'Vinay, Vedang', repeat:'weekly', note:''},
     {id:'ev3', title:'Sprint 3 planning',       date:'2026-07-22', time:'10:00', hours:1,   kind:'commitment', who:'Shardul, Papa', repeat:'',      note:''},
     {id:'ev4', title:'Sprint 3 review + retro',  date:'2026-08-04', time:'19:00', hours:2,   kind:'commitment', who:'Shardul, Papa', repeat:'',      note:'Close the sprint, record velocity, plan Sprint 4.'},
+    {id:'ev5', title:"Meeting with Krushanu's father", date:'2026-07-25', time:'10:00', hours:1, kind:'commitment', who:"Krushanu's father", repeat:'', note:''},
   ],
 
   /* Free-form notes from the sprint review, newest first. */
